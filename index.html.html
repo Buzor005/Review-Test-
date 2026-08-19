@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Test</title>
+<style>
+  :root{
+    --paper:#FBFCFD; --ink:#14181F; --muted:#5A6472; --line:#E4E8EE;
+    --teal:#0E7C86; --teal-050:#E6F3F4; --amber:#9A5B0B; --amber-050:#FBF1E3;
+    --rose:#B42318; --shadow:0 1px 2px rgba(20,24,31,.04),0 8px 24px rgba(20,24,31,.06);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:640px;margin:0 auto;padding:24px 18px 96px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 6px}
+  h1{font-size:26px;line-height:1.15;letter-spacing:-.01em;margin:0 0 12px;font-weight:650}
+  h2{font-size:15px;margin:0 0 8px;font-weight:640}
+  p{margin:0 0 14px}
+  .lede{color:var(--muted);font-size:15px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
+    box-shadow:var(--shadow);margin:0 0 16px}
+  label.field{display:block;font-size:13px;font-weight:600;margin:0 0 6px}
+  input[type=text]{width:100%;font:inherit;padding:11px 13px;border:1px solid var(--line);
+    border-radius:10px;background:#fff}
+  textarea{width:100%;font:inherit;padding:11px 13px;border:1px solid var(--line);
+    border-radius:10px;background:#fff;min-height:66px;resize:vertical;margin-top:8px}
+  input:focus,textarea:focus,button:focus-visible,.opt:focus-within{outline:2px solid var(--teal);outline-offset:1px}
+  button{font:inherit;cursor:pointer;border:0;border-radius:11px;padding:13px 20px;font-weight:640}
+  .btn-primary{background:var(--teal);color:#fff;width:100%}
+  .btn-primary:disabled{background:#C3CBD4;cursor:not-allowed}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn-row button{flex:1;min-width:140px}
+
+  /* progress */
+  .prog{display:flex;align-items:center;gap:12px;margin:0 0 20px}
+  .prog .bar{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+  .prog .bar>i{display:block;height:100%;background:var(--teal);width:0;
+    transition:width .35s ease}
+  .prog .count{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+
+  /* spec = instrument readout */
+  .spec{font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:12px;
+    overflow:hidden}
+  .spec .head{background:#F3F5F8;padding:8px 12px;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+  .spec .row{display:flex;justify-content:space-between;gap:14px;padding:7px 12px;
+    border-bottom:1px solid var(--line)}
+  .spec .row:last-child{border-bottom:0}
+  .spec .k{color:var(--muted)}
+  .spec .v{text-align:right;font-weight:600}
+  .summary{font-size:15.5px;line-height:1.6}
+
+  /* structured extras */
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--teal-050);
+    color:var(--teal);border-radius:6px;padding:1px 6px;margin-left:2px}
+  .claims{font-family:var(--mono);font-size:12.5px;border:1px dashed #CBD9DA;border-radius:10px;
+    background:#F7FBFB;padding:4px 12px;margin-top:4px}
+  .claims .row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid #E6EDED}
+  .claims .row:last-child{border-bottom:0}
+  .claims .k{color:var(--teal)}
+  .checklist{margin-top:4px}
+  .chk{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);
+    border-radius:9px;margin-bottom:7px;font-size:14px;background:#fff;cursor:pointer}
+  .chk input{width:18px;height:18px;accent-color:var(--amber);margin:0}
+  .scaffold-note{font-size:12.5px;color:var(--amber);background:var(--amber-050);
+    border-radius:8px;padding:8px 11px;margin:0 0 12px}
+
+  /* response controls */
+  .q{margin-top:6px}
+  .q .qlabel{font-size:14px;font-weight:600;margin:0 0 8px}
+  .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{flex:1;min-width:140px;position:relative;border:1px solid var(--line);border-radius:10px;
+    padding:11px 12px;font-size:14px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:9px}
+  .opt input{position:absolute;opacity:0}
+  .opt .dot{width:16px;height:16px;border-radius:50%;border:2px solid #C3CBD4;flex:none}
+  .opt[data-on="1"]{border-color:var(--teal);background:var(--teal-050)}
+  .opt[data-on="1"] .dot{border-color:var(--teal);background:var(--teal)}
+  .divider{height:1px;background:var(--line);margin:18px 0}
+  .foot{color:var(--muted);font-size:12.5px}
+  .hidden{display:none}
+
+  /* results */
+  .stat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .stat:last-child{border-bottom:0}
+  .stat b{font-family:var(--mono)}
+  .pill{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:#F3F5F8;color:var(--muted)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+"use strict";
+
+/* ---------- required completeness fields (the checklist = σ) ---------- */
+const REQUIRED = [
+  ["ymm","Year / make / model"],
+  ["mileage","Mileage"],
+  ["price","Price"],
+  ["transmission","Transmission"],
+  ["owners","Previous owners"],
+  ["title","Title status"],
+  ["accidents","Accident history"]
+];
+
+/* ---------- the 12 items: spec, summary, claims-present (φ), answer key ---------- */
+/* claims = every fact the summary actually states, with the value AS STATED
+   (wrong values included for commission items so cross-checking the spec catches them).
+   A required field absent from claims = an omission the checklist can surface.       */
+const ITEMS = [
+ {id:1,
+  spec:[["Year / make / model","2018 Honda Civic LX"],["Mileage","62,400 mi"],["Price","$16,900"],
+    ["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],
+    ["Accidents","none reported"],["Colour","silver"],["Features","backup camera, Bluetooth, cruise control"]],
+  summary:"This 2018 Honda Civic LX has 62,400 miles and is priced at $16,900. It has an automatic CVT transmission and has had two previous owners. The title is clean with no reported accidents. It comes in silver and includes a backup camera, Bluetooth, and cruise control.",
+  claims:[["Year / make / model","2018 Honda Civic LX"],["Mileage","62,400 mi"],["Price","$16,900"],
+    ["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","silver"]],
+  key:{type:"clean"}},
+
+ {id:2,
+  spec:[["Year / make / model","2016 Toyota Corolla LE"],["Mileage","91,200 mi"],["Price","$12,500"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","white"],["Features","lane assist, Apple CarPlay"]],
+  summary:"This 2016 Toyota Corolla LE has 71,200 miles and is listed at $12,500. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's white and features lane assist and Apple CarPlay.",
+  claims:[["Year / make / model","2016 Toyota Corolla LE"],["Mileage","71,200 mi"],["Price","$12,500"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","white"]],
+  key:{type:"commission",severity:"high",note:"Mileage stated 71,200; true 91,200"}},
+
+ {id:3,
+  spec:[["Year / make / model","2015 Ford Escape SE"],["Mileage","104,800 mi"],["Price","$9,800"],
+    ["Transmission","automatic"],["Previous owners","3"],["Title","clean"],
+    ["Accidents","one reported (rear-end, repaired)"],["Colour","blue"],["Features","heated seats"]],
+  summary:"This 2015 Ford Escape SE has 104,800 miles and is priced at $9,800. It has an automatic transmission and three previous owners. The title is clean. It's blue with heated seats.",
+  claims:[["Year / make / model","2015 Ford Escape SE"],["Mileage","104,800 mi"],["Price","$9,800"],
+    ["Transmission","automatic"],["Previous owners","3"],["Title","clean"],["Colour","blue"]],
+  key:{type:"omission",severity:"high",schema:"in",note:"Accident history (rear-end, repaired) not mentioned"}},
+
+ {id:4,
+  spec:[["Year / make / model","2019 Mazda CX-5 Touring"],["Mileage","48,300 mi"],["Price","$23,400"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","red"],["Features","sunroof, blind-spot monitoring"]],
+  summary:"This 2019 Mazda CX-5 Touring has 48,300 miles and is priced at $32,400. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's red with a sunroof and blind-spot monitoring.",
+  claims:[["Year / make / model","2019 Mazda CX-5 Touring"],["Mileage","48,300 mi"],["Price","$32,400"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","red"]],
+  key:{type:"commission",severity:"high",note:"Price stated $32,400; true $23,400"}},
+
+ {id:5,
+  spec:[["Year / make / model","2017 Subaru Outback 2.5i"],["Mileage","78,100 mi"],["Price","$18,200"],
+    ["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","green"],["Features","all-wheel drive, roof rails"]],
+  summary:"This 2017 Subaru Outback 2.5i has 78,100 miles and is priced at $18,200. It has a CVT automatic transmission and two previous owners. The title is clean with no reported accidents. It's green and includes all-wheel drive and roof rails.",
+  claims:[["Year / make / model","2017 Subaru Outback 2.5i"],["Mileage","78,100 mi"],["Price","$18,200"],
+    ["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","green"]],
+  key:{type:"clean"}},
+
+ {id:6,
+  spec:[["Year / make / model","2014 Chevrolet Cruze LT"],["Mileage","118,500 mi"],["Price","$6,900"],
+    ["Transmission","automatic"],["Previous owners","4"],["Title","salvage (rebuilt)"],
+    ["Accidents","none reported since rebuild"],["Colour","gray"],["Features","—"]],
+  summary:"This 2014 Chevrolet Cruze LT has 118,500 miles and is priced at $6,900. It has an automatic transmission and four previous owners. It's gray. No accidents have been reported.",
+  claims:[["Year / make / model","2014 Chevrolet Cruze LT"],["Mileage","118,500 mi"],["Price","$6,900"],
+    ["Transmission","automatic"],["Previous owners","4"],["Accidents","none reported"],["Colour","gray"]],
+  key:{type:"omission",severity:"high",schema:"in",note:"Salvage / rebuilt title not mentioned"}},
+
+ {id:7,
+  spec:[["Year / make / model","2018 Volkswagen Golf"],["Mileage","55,700 mi"],["Price","$17,300"],
+    ["Transmission","manual"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","black"],["Features","heated seats, Android Auto"]],
+  summary:"This 2018 Volkswagen Golf has 55,700 miles and is priced at $17,300. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's black with heated seats and Android Auto.",
+  claims:[["Year / make / model","2018 Volkswagen Golf"],["Mileage","55,700 mi"],["Price","$17,300"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","black"]],
+  key:{type:"commission",severity:"medium",note:"Transmission stated automatic; true manual"}},
+
+ {id:8,
+  spec:[["Year / make / model","2016 Hyundai Elantra SE"],["Mileage","83,900 mi"],["Price","$11,200"],
+    ["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","beige"],["Features","Bluetooth"]],
+  summary:"This 2016 Hyundai Elantra SE has 83,900 miles and is priced at $11,200. It has an automatic transmission and two previous owners. The title is clean with no reported accidents. It includes Bluetooth.",
+  claims:[["Year / make / model","2016 Hyundai Elantra SE"],["Mileage","83,900 mi"],["Price","$11,200"],
+    ["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"]],
+  key:{type:"omission",severity:"low",schema:"out",note:"Colour (beige) not mentioned — not a required field"}},
+
+ {id:9,
+  spec:[["Year / make / model","2017 Nissan Rogue SV"],["Mileage","69,400 mi"],["Price","$15,600"],
+    ["Transmission","automatic"],["Previous owners","3"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","white"],["Features","backup camera"]],
+  summary:"This 2017 Nissan Rogue SV has 69,400 miles and is priced at $15,600. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's white with a backup camera.",
+  claims:[["Year / make / model","2017 Nissan Rogue SV"],["Mileage","69,400 mi"],["Price","$15,600"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","white"]],
+  key:{type:"commission",severity:"medium",note:"Owners stated one; true three"}},
+
+ {id:10,
+  spec:[["Year / make / model","2019 Kia Sportage LX"],["Mileage","41,200 mi"],["Price","$19,900"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],
+    ["Accidents","two reported (one moderate, repaired)"],["Colour","silver"],["Features","Apple CarPlay, lane assist"]],
+  summary:"This 2019 Kia Sportage LX has 41,200 miles and is priced at $19,900. It has an automatic transmission and one previous owner. The title is clean. It's silver with Apple CarPlay and lane assist.",
+  claims:[["Year / make / model","2019 Kia Sportage LX"],["Mileage","41,200 mi"],["Price","$19,900"],
+    ["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Colour","silver"]],
+  key:{type:"omission",severity:"high",schema:"in",note:"Two reported accidents not mentioned"}},
+
+ {id:11,
+  spec:[["Year / make / model","2015 Honda CR-V EX"],["Mileage","96,700 mi"],["Price","$13,400"],
+    ["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","gray"],["Features","sunroof, backup camera"]],
+  summary:"This 2015 Honda CR-V EX has 96,700 miles and is priced at $13,400. It has an automatic transmission and two previous owners. The title is clean with no reported accidents. It's gray with a sunroof and backup camera.",
+  claims:[["Year / make / model","2015 Honda CR-V EX"],["Mileage","96,700 mi"],["Price","$13,400"],
+    ["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","gray"]],
+  key:{type:"clean"}},
+
+ {id:12,
+  spec:[["Year / make / model","2018 Toyota RAV4 XLE"],["Mileage","58,900 mi"],["Price","$21,700"],
+    ["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],
+    ["Colour","blue"],["Features","sunroof, blind-spot monitoring"]],
+  summary:"This 2018 Toyota RAV4 XLE has 58,900 miles and is priced at $21,700. It has an automatic transmission and a clean title with no reported accidents. It's blue with a sunroof and blind-spot monitoring.",
+  claims:[["Year / make / model","2018 Toyota RAV4 XLE"],["Mileage","58,900 mi"],["Price","$21,700"],
+    ["Transmission","automatic"],["Title","clean"],["Accidents","none reported"],["Colour","blue"]],
+  key:{type:"omission",severity:"medium",schema:"in",note:"Number of previous owners not mentioned"}}
+];
+
+/* ---------- state ---------- */
+const app = document.getElementById("app");
+let S = { pid:"", order:[], cond:{}, idx:0, started:0, resp:{} };
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ---------- screens ---------- */
+function screenIntro(){
+  app.innerHTML = `
+    <p class="eyebrow">Review task</p>
+    <h1>Spot the mistakes in a set of car listings</h1>
+    <p class="lede">You'll see 12 used-car listings. Each has a spec sheet (the true details) and a short written summary. For each one, your job is to find any statement in the summary that's wrong, and note anything important that's missing. It takes about 8–12 minutes.</p>
+    <div class="card">
+      <label class="field" for="pid">Your name or a nickname</label>
+      <input type="text" id="pid" placeholder="e.g. Alex" autocomplete="off">
+      <p class="foot" style="margin:10px 0 0">Used only to label your responses. Work at a natural pace — there's no visible timer, but the time on each listing is recorded quietly so we can compare.</p>
+    </div>
+    <button class="btn-primary" id="go" disabled>Start</button>`;
+  const pid=document.getElementById("pid"), go=document.getElementById("go");
+  pid.addEventListener("input",()=>{go.disabled=!pid.value.trim();});
+  pid.addEventListener("keydown",e=>{if(e.key==="Enter"&&pid.value.trim())go.click();});
+  go.addEventListener("click",()=>{
+    S.pid=pid.value.trim();
+    S.order=shuffle(ITEMS.map(i=>i.id));
+    const conds=shuffle([...Array(6).fill("structured"),...Array(6).fill("plain")]);
+    S.order.forEach((id,k)=>S.cond[id]=conds[k]);
+    S.idx=0; renderItem();
+  });
+  pid.focus();
+}
+
+function renderItem(){
+  const id=S.order[S.idx], item=ITEMS.find(i=>i.id===id), cond=S.cond[id];
+  const n=S.idx+1, pct=Math.round((S.idx)/12*100);
+  const r=S.resp[id]||{checks:{}};
+  const specRows=item.spec.map(([k,v])=>`<div class="row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`).join("");
+
+  let structured="";
+  if(cond==="structured"){
+    const claimRows=item.claims.map(([k,v])=>`<div class="row"><span class="k">${esc(k)}</span><span>${esc(v)}</span></div>`).join("");
+    const checks=REQUIRED.map(([key,lbl])=>`
+      <label class="chk"><input type="checkbox" data-chk="${key}" ${r.checks&&r.checks[key]?"checked":""}> ${esc(lbl)}</label>`).join("");
+    structured=`
+      <p class="scaffold-note">Extra tools for this listing: a list of exactly what the summary claims, and a checklist of the facts a complete listing must include.</p>
+      <div class="card">
+        <h2>What the summary claims <span class="tag">cross-check each against the spec</span></h2>
+        <div class="claims">${claimRows}</div>
+      </div>
+      <div class="card">
+        <h2>Required facts — tick each one that appears in the summary</h2>
+        <div class="checklist">${checks}</div>
+      </div>`;
+  }
+
+  app.innerHTML=`
+    <div class="prog"><span class="count">Listing ${n} / 12</span>
+      <div class="bar"><i style="width:${pct}%"></i></div></div>
+
+    <div class="card"><div class="spec"><div class="head">Spec sheet — the true details</div>${specRows}</div></div>
+
+    <div class="card"><h2>Summary</h2><p class="summary" style="margin:0">${esc(item.summary)}</p></div>
+
+    ${structured}
+
+    <div class="card">
+      <div class="q">
+        <p class="qlabel">Is every statement in the summary correct?</p>
+        <div class="opts" data-group="wrong">
+          <label class="opt" data-val="no"><input type="radio" name="wrong"><span class="dot"></span>All correct</label>
+          <label class="opt" data-val="yes"><input type="radio" name="wrong"><span class="dot"></span>Something is wrong</label>
+        </div>
+        <textarea class="hidden" id="wrongText" placeholder="Which statement is wrong, and what should it say?"></textarea>
+      </div>
+      <div class="divider"></div>
+      <div class="q">
+        <p class="qlabel">Is anything important missing from the summary?</p>
+        <div class="opts" data-group="missing">
+          <label class="opt" data-val="no"><input type="radio" name="missing"><span class="dot"></span>Nothing missing</label>
+          <label class="opt" data-val="yes"><input type="radio" name="missing"><span class="dot"></span>Something is missing</label>
+        </div>
+        <textarea class="hidden" id="missingText" placeholder="What's missing?"></textarea>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="next" disabled>${S.idx===11?"Finish":"Next listing"}</button>`;
+
+  // restore any prior answers for this item (if navigating isn't used, harmless)
+  let wrong=r.wrong||null, missing=r.missing||null;
+  const wt=document.getElementById("wrongText"), mt=document.getElementById("missingText");
+  if(r.wrongText){wt.value=r.wrongText;} if(r.missingText){mt.value=r.missingText;}
+
+  function paint(group,val){
+    document.querySelectorAll(`.opts[data-group="${group}"] .opt`).forEach(o=>{
+      o.dataset.on = (o.dataset.val===val)?"1":"0";});
+  }
+  function refresh(){document.getElementById("next").disabled=!(wrong&&missing);}
+  if(wrong){paint("wrong",wrong); wt.classList.toggle("hidden",wrong!=="yes");}
+  if(missing){paint("missing",missing); mt.classList.toggle("hidden",missing!=="yes");}
+  refresh();
+
+  document.querySelectorAll('.opts[data-group="wrong"] .opt').forEach(o=>o.addEventListener("click",()=>{
+    wrong=o.dataset.val; paint("wrong",wrong); wt.classList.toggle("hidden",wrong!=="yes"); refresh();}));
+  document.querySelectorAll('.opts[data-group="missing"] .opt').forEach(o=>o.addEventListener("click",()=>{
+    missing=o.dataset.val; paint("missing",missing); mt.classList.toggle("hidden",missing!=="yes"); refresh();}));
+
+  S.started=Date.now();
+  document.getElementById("next").addEventListener("click",()=>{
+    const checks={};
+    document.querySelectorAll('input[data-chk]').forEach(c=>checks[c.dataset.chk]=c.checked);
+    S.resp[id]={condition:cond, wrong, missing, wrongText:wt.value.trim(),
+      missingText:mt.value.trim(), checks, ms:Date.now()-S.started};
+    if(S.idx===11){renderDone();} else {S.idx++; window.scrollTo(0,0); renderItem();}
+  });
+  window.scrollTo(0,0);
+}
+
+function renderDone(){
+  app.innerHTML=`
+    <p class="eyebrow">Complete</p>
+    <h1>That's all 12 — thank you.</h1>
+    <p class="lede">Your responses are ready. Send them back with the button below.</p>
+    <div class="card">
+      <h2>Send your results</h2>
+      <p class="foot" style="margin-top:0">Download a small file and email it to whoever sent you this. It contains only your answers and timings — nothing else.</p>
+      <div class="btn-row">
+        <button class="btn-primary" id="dl">Download my responses</button>
+        <button class="btn-ghost" id="cp">Copy as text</button>
+      </div>
+    </div>
+    <button class="btn-ghost" id="showRes" style="width:100%">I'm the researcher — show scoring</button>
+    <div id="res"></div>`;
+  document.getElementById("dl").addEventListener("click",downloadData);
+  document.getElementById("cp").addEventListener("click",()=>{
+    navigator.clipboard.writeText(JSON.stringify(payload(),null,2)).then(()=>{
+      document.getElementById("cp").textContent="Copied";});
+  });
+  document.getElementById("showRes").addEventListener("click",renderResults);
+}
+
+function payload(){
+  return {participant:S.pid, completedAt:new Date().toISOString(),
+    order:S.order, responses:S.order.map(id=>({item:id,...S.resp[id]}))};
+}
+function downloadData(){
+  const blob=new Blob([JSON.stringify(payload(),null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=`review-test_${S.pid.replace(/\s+/g,"-")||"anon"}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+/* ---------- researcher auto-scoring (uses the key; yes/no detection only) ---------- */
+function renderResults(){
+  const byCond={plain:blank(),structured:blank()};
+  function blank(){return {commHit:0,commTot:0,omHit:0,omTot:0,omHiHit:0,omHiTot:0,
+    inHit:0,inTot:0,outHit:0,outTot:0,cleanOk:0,cleanTot:0,falseWrong:0,falseMiss:0,times:[]};}
+  S.order.forEach(id=>{
+    const it=ITEMS.find(i=>i.id===id), r=S.resp[id], b=byCond[r.condition];
+    b.times.push(r.ms);
+    const flaggedWrong=r.wrong==="yes", flaggedMiss=r.missing==="yes";
+    if(it.key.type==="commission"){b.commTot++; if(flaggedWrong)b.commHit++; if(flaggedMiss)b.falseMiss++;}
+    else if(it.key.type==="omission"){
+      b.omTot++; if(flaggedMiss)b.omHit++;
+      if(it.key.severity==="high"){b.omHiTot++; if(flaggedMiss)b.omHiHit++;}
+      if(it.key.schema==="in"){b.inTot++; if(flaggedMiss)b.inHit++;}
+      if(it.key.schema==="out"){b.outTot++; if(flaggedMiss)b.outHit++;}
+      if(flaggedWrong)b.falseWrong++;
+    } else { b.cleanTot++; if(!flaggedWrong&&!flaggedMiss)b.cleanOk++;
+      if(flaggedWrong)b.falseWrong++; if(flaggedMiss)b.falseMiss++; }
+  });
+  const med=a=>{if(!a.length)return 0;const s=a.slice().sort((x,y)=>x-y),m=Math.floor(s.length/2);
+    return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2);};
+  const rate=(h,t)=>t?Math.round(h/t*100)+"%":"—";
+  function block(name,b){
+    return `<div class="card"><h2>${name} <span class="pill">${b.times.length} items</span></h2>
+      <div class="stat"><span>Wrong-fact errors caught</span><b>${rate(b.commHit,b.commTot)} <span class="pill">${b.commHit}/${b.commTot}</span></b></div>
+      <div class="stat"><span>Missing-fact errors caught</span><b>${rate(b.omHit,b.omTot)} <span class="pill">${b.omHit}/${b.omTot}</span></b></div>
+      <div class="stat"><span>&nbsp;&nbsp;· high-severity omissions</span><b>${rate(b.omHiHit,b.omHiTot)} <span class="pill">${b.omHiHit}/${b.omHiTot}</span></b></div>
+      <div class="stat"><span>&nbsp;&nbsp;· on the checklist (in-schema)</span><b>${rate(b.inHit,b.inTot)} <span class="pill">${b.inHit}/${b.inTot}</span></b></div>
+      <div class="stat"><span>&nbsp;&nbsp;· off the checklist (out-of-schema)</span><b>${rate(b.outHit,b.outTot)} <span class="pill">${b.outHit}/${b.outTot}</span></b></div>
+      <div class="stat"><span>Clean items correctly left alone</span><b>${rate(b.cleanOk,b.cleanTot)} <span class="pill">${b.cleanOk}/${b.cleanTot}</span></b></div>
+      <div class="stat"><span>False alarms (flagged a non-error)</span><b>${b.falseWrong+b.falseMiss}</b></div>
+      <div class="stat"><span>Median time per listing</span><b>${(med(b.times)/1000).toFixed(1)}s</b></div>
+    </div>`;
+  }
+  document.getElementById("res").innerHTML=`
+    <div class="divider"></div>
+    <p class="eyebrow">Researcher view · ${esc(S.pid)}</p>
+    <p class="foot">Auto-scored from the answer key. This scores <b>detection</b> only — whether they flagged the right category (wrong / missing). It does <b>not</b> verify they named the exact error; read the text answers in the downloaded file to confirm. One participant is a signal, not a result — the comparison that matters is Structured vs Plain, pooled across several people.</p>
+    ${block("Structured",byCond.structured)}
+    ${block("Plain",byCond.plain)}
+    <p class="foot">What to look for once you have a handful of people: does <b>Structured</b> lift the missing-fact catch rate — especially high-severity and on-checklist omissions — without a big jump in false alarms or time? The off-checklist omission (colour) is the control: the checklist shouldn't help there.</p>`;
+  document.getElementById("res").scrollIntoView({behavior:"smooth"});
+}
+
+screenIntro();
+</script>
+</body>
+</html>
