@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Test / แบบทดสอบการตรวจทาน</title>
+<style>
+  :root{
+    --paper:#FBFCFD; --ink:#14181F; --muted:#5A6472; --line:#E4E8EE;
+    --teal:#0E7C86; --teal-050:#E6F3F4; --amber:#9A5B0B; --amber-050:#FBF1E3;
+    --rose:#B42318; --shadow:0 1px 2px rgba(20,24,31,.04),0 8px 24px rgba(20,24,31,.06);
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Leelawadee UI","Sarabun",Tahoma,Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Leelawadee UI",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.6}
+  .wrap{max-width:640px;margin:0 auto;padding:24px 18px 96px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 6px}
+  h1{font-size:26px;line-height:1.2;letter-spacing:-.01em;margin:0 0 12px;font-weight:650}
+  h2{font-size:15px;margin:0 0 8px;font-weight:640}
+  p{margin:0 0 14px}
+  .lede{color:var(--muted);font-size:15px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
+    box-shadow:var(--shadow);margin:0 0 16px}
+  label.field{display:block;font-size:13px;font-weight:600;margin:0 0 6px}
+  input[type=text]{width:100%;font:inherit;padding:11px 13px;border:1px solid var(--line);
+    border-radius:10px;background:#fff}
+  textarea{width:100%;font:inherit;padding:11px 13px;border:1px solid var(--line);
+    border-radius:10px;background:#fff;min-height:66px;resize:vertical;margin-top:8px}
+  input:focus,textarea:focus,button:focus-visible,.opt:focus-within{outline:2px solid var(--teal);outline-offset:1px}
+  button{font:inherit;cursor:pointer;border:0;border-radius:11px;padding:13px 20px;font-weight:640}
+  .btn-primary{background:var(--teal);color:#fff;width:100%}
+  .btn-primary:disabled{background:#C3CBD4;cursor:not-allowed}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn-row button{flex:1;min-width:140px}
+
+  .langbar{display:flex;gap:8px;justify-content:flex-end;margin:0 0 14px}
+  .langbar button{padding:7px 14px;border-radius:99px;font-size:13px;border:1px solid var(--line);
+    background:#fff;color:var(--muted);font-weight:600}
+  .langbar button[data-on="1"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .prog{display:flex;align-items:center;gap:12px;margin:0 0 20px}
+  .prog .bar{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+  .prog .bar>i{display:block;height:100%;background:var(--teal);width:0;transition:width .35s ease}
+  .prog .count{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+
+  .spec{font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .spec .head{background:#F3F5F8;padding:8px 12px;font-size:11px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+  .spec .row{display:flex;justify-content:space-between;gap:14px;padding:7px 12px;border-bottom:1px solid var(--line)}
+  .spec .row:last-child{border-bottom:0}
+  .spec .k{color:var(--muted)}
+  .spec .v{text-align:right;font-weight:600}
+  .summary{font-size:15.5px;line-height:1.7}
+
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--teal-050);
+    color:var(--teal);border-radius:6px;padding:1px 6px;margin-left:2px}
+  .claims{font-family:var(--mono);font-size:12.5px;border:1px dashed #CBD9DA;border-radius:10px;
+    background:#F7FBFB;padding:4px 12px;margin-top:4px}
+  .claims .row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid #E6EDED}
+  .claims .row:last-child{border-bottom:0}
+  .claims .k{color:var(--teal)}
+  .checklist{margin-top:4px}
+  .chk{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);
+    border-radius:9px;margin-bottom:7px;font-size:14px;background:#fff;cursor:pointer}
+  .chk input{width:18px;height:18px;accent-color:var(--amber);margin:0}
+  .scaffold-note{font-size:12.5px;color:var(--amber);background:var(--amber-050);
+    border-radius:8px;padding:8px 11px;margin:0 0 12px}
+
+  .q{margin-top:6px}
+  .q .qlabel{font-size:14px;font-weight:600;margin:0 0 8px}
+  .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{flex:1;min-width:140px;position:relative;border:1px solid var(--line);border-radius:10px;
+    padding:11px 12px;font-size:14px;cursor:pointer;background:#fff;display:flex;align-items:center;gap:9px}
+  .opt input{position:absolute;opacity:0}
+  .opt .dot{width:16px;height:16px;border-radius:50%;border:2px solid #C3CBD4;flex:none}
+  .opt[data-on="1"]{border-color:var(--teal);background:var(--teal-050)}
+  .opt[data-on="1"] .dot{border-color:var(--teal);background:var(--teal)}
+  .divider{height:1px;background:var(--line);margin:18px 0}
+  .foot{color:var(--muted);font-size:12.5px}
+  .hidden{display:none}
+  .stat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .stat:last-child{border-bottom:0}
+  .stat b{font-family:var(--mono)}
+  .pill{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:#F3F5F8;color:var(--muted)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   PASTE YOUR GOOGLE SHEET WEB APP URL BETWEEN THE QUOTES BELOW.
+   (It looks like: https://script.google.com/macros/s/XXXX/exec )
+   Until you do, the test still works and people can still Download
+   their file — it just won't auto-collect.
+   ===================================================================== */
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzugaaISjAAEtzvlgICgJAnQjGwwiQuqxgjbChavkcdxs0eEk5fbkZEcXtAPwkh-9wLfw/exec";
+/* ===================================================================== */
+
+/* ---------------- UI strings ---------------- */
+const T = {
+ en:{
+  req:[["ymm","Year / make / model"],["mileage","Mileage"],["price","Price"],["transmission","Transmission"],
+      ["owners","Previous owners"],["title","Title status"],["accidents","Accident history"]],
+  eyebrow:"Review task",
+  h1:"Spot the mistakes in a set of car listings",
+  lede:"You'll see 12 used-car listings. Each has a spec sheet (the true details) and a short written summary. For each one, find any statement in the summary that's wrong, and note anything important that's missing. It takes about 8–12 minutes.",
+  nameLabel:"Your name or a nickname", namePh:"e.g. Alex",
+  nameFoot:"Used only to label your responses. Work at a natural pace — there's no visible timer, but the time on each listing is recorded quietly so we can compare.",
+  start:"Start", listing:"Listing", of:"/",
+  specHead:"Spec sheet — the true details", summary:"Summary",
+  scaffold:"Extra tools for this listing: a list of exactly what the summary claims, and a checklist of the facts a complete listing must include.",
+  claimsHead:"What the summary claims", claimsTag:"cross-check each against the spec",
+  checkHead:"Required facts — tick each one that appears in the summary",
+  q1:"Is every statement in the summary correct?", q1no:"All correct", q1yes:"Something is wrong",
+  q1ph:"Which statement is wrong, and what should it say?",
+  q2:"Is anything important missing from the summary?", q2no:"Nothing missing", q2yes:"Something is missing",
+  q2ph:"What's missing?",
+  next:"Next listing", finish:"Finish",
+  doneEye:"Complete", doneH1:"That's all 12 — thank you.", doneLede:"Your responses are ready. Send them back with the button below.",
+  sendHead:"Send your results",
+  sendFoot:"Download a small file and email it to whoever sent you this. It contains only your answers and timings — nothing else.",
+  dl:"Download my responses", cp:"Copy as text", copied:"Copied",
+  showRes:"I'm the researcher — show scoring",
+  resTitle:"Researcher view",
+  resNote:"Auto-scored from the answer key. This scores detection only — whether they flagged the right category (wrong / missing). It does not verify they named the exact error; read the text answers in the downloaded file. One participant is a signal, not a result — the comparison that matters is Structured vs Plain, pooled across several people.",
+  rComm:"Wrong-fact errors caught", rOm:"Missing-fact errors caught",
+  rHi:"&nbsp;&nbsp;· high-severity omissions", rIn:"&nbsp;&nbsp;· on the checklist (in-schema)",
+  rOut:"&nbsp;&nbsp;· off the checklist (out-of-schema)", rClean:"Clean items correctly left alone",
+  rFalse:"False alarms (flagged a non-error)", rTime:"Median time per listing", rItems:"items",
+  cStructured:"Structured", cPlain:"Plain",
+  resFoot:"What to look for once you have several people: does Structured lift the missing-fact catch rate — especially high-severity and on-checklist omissions — without a big jump in false alarms or time? The off-checklist omission (colour) is the control: the checklist shouldn't help there.",
+  saving:"Saving your responses…",
+  saved:"Saved. Thank you — you're all done. You can close this page.",
+  saveFail:"Couldn't save automatically. Please tap “Download my responses” below and send the file to whoever invited you."
+ },
+ th:{
+  req:[["ymm","ปี / ยี่ห้อ / รุ่น"],["mileage","เลขไมล์"],["price","ราคา"],["transmission","ระบบเกียร์"],
+      ["owners","เจ้าของเดิม"],["title","สถานะเล่มทะเบียน"],["accidents","ประวัติอุบัติเหตุ"]],
+  eyebrow:"แบบทดสอบการตรวจทาน",
+  h1:"จับผิดข้อมูลในประกาศขายรถ",
+  lede:"คุณจะเห็นประกาศขายรถมือสอง 12 คัน แต่ละคันมีใบสเปก (ข้อมูลจริง) และคำอธิบายสั้น ๆ หน้าที่ของคุณคือหาข้อความในคำอธิบายที่ผิด และสังเกตว่ามีข้อมูลสำคัญอะไรขาดหายไป ใช้เวลาประมาณ 8–12 นาที",
+  nameLabel:"ชื่อหรือชื่อเล่นของคุณ", namePh:"เช่น สมชาย",
+  nameFoot:"ใช้เพื่อระบุคำตอบของคุณเท่านั้น ทำตามจังหวะปกติ ไม่มีการจับเวลาที่มองเห็น แต่ระบบจะบันทึกเวลาที่ใช้ในแต่ละคันเงียบ ๆ เพื่อนำไปเปรียบเทียบ",
+  start:"เริ่ม", listing:"คันที่", of:"/",
+  specHead:"ใบสเปก — ข้อมูลจริง", summary:"คำอธิบาย",
+  scaffold:"เครื่องมือเสริมสำหรับคันนี้: รายการสิ่งที่คำอธิบายระบุไว้ และเช็กลิสต์ข้อมูลที่ประกาศที่สมบูรณ์ต้องมี",
+  claimsHead:"สิ่งที่คำอธิบายระบุไว้", claimsTag:"ตรวจเทียบกับใบสเปกทีละข้อ",
+  checkHead:"ข้อมูลที่จำเป็น — ติ๊กข้อที่ปรากฏในคำอธิบาย",
+  q1:"ทุกข้อความในคำอธิบายถูกต้องหรือไม่?", q1no:"ถูกต้องทั้งหมด", q1yes:"มีบางอย่างผิด",
+  q1ph:"ข้อความไหนผิด และที่ถูกควรเป็นอะไร?",
+  q2:"มีข้อมูลสำคัญอะไรขาดหายไปหรือไม่?", q2no:"ไม่มีอะไรขาด", q2yes:"มีบางอย่างขาดหาย",
+  q2ph:"อะไรขาดหายไป?",
+  next:"คันถัดไป", finish:"เสร็จสิ้น",
+  doneEye:"เสร็จสมบูรณ์", doneH1:"ครบทั้ง 12 คันแล้ว — ขอบคุณครับ", doneLede:"คำตอบของคุณพร้อมแล้ว ส่งกลับด้วยปุ่มด้านล่าง",
+  sendHead:"ส่งผลลัพธ์ของคุณ",
+  sendFoot:"ดาวน์โหลดไฟล์เล็ก ๆ แล้วส่งกลับไปให้คนที่ส่งลิงก์นี้มา ไฟล์มีเฉพาะคำตอบและเวลาของคุณเท่านั้น",
+  dl:"ดาวน์โหลดคำตอบของฉัน", cp:"คัดลอกเป็นข้อความ", copied:"คัดลอกแล้ว",
+  showRes:"ฉันคือผู้วิจัย — แสดงผลคะแนน",
+  resTitle:"มุมมองผู้วิจัย",
+  resNote:"ให้คะแนนอัตโนมัติจากเฉลย นี่วัดเฉพาะ ‘การตรวจจับ’ — ว่าระบุประเภทถูกหรือไม่ (ผิด / ขาด) ไม่ได้ยืนยันว่าระบุจุดผิดได้ตรงจุด ให้อ่านคำตอบที่เป็นข้อความในไฟล์ที่ดาวน์โหลด ผู้ตอบคนเดียวเป็นเพียงสัญญาณ ไม่ใช่ข้อสรุป สิ่งที่สำคัญคือการเปรียบเทียบแบบมีโครงสร้างกับแบบธรรมดา รวมจากหลายคน",
+  rComm:"จับข้อมูลผิดได้", rOm:"จับข้อมูลที่ขาดได้",
+  rHi:"&nbsp;&nbsp;· ข้อมูลขาดที่สำคัญมาก", rIn:"&nbsp;&nbsp;· อยู่ในเช็กลิสต์",
+  rOut:"&nbsp;&nbsp;· ไม่อยู่ในเช็กลิสต์", rClean:"คันที่ไม่มีข้อผิด ปล่อยผ่านถูกต้อง",
+  rFalse:"เตือนผิดพลาด (ทักสิ่งที่ไม่ใช่ข้อผิด)", rTime:"เวลามัธยฐานต่อคัน", rItems:"คัน",
+  cStructured:"แบบมีโครงสร้าง", cPlain:"แบบธรรมดา",
+  resFoot:"สิ่งที่ควรดูเมื่อมีผู้ตอบหลายคน: แบบมีโครงสร้างช่วยเพิ่มอัตราการจับข้อมูลที่ขาดหรือไม่ — โดยเฉพาะที่สำคัญมากและที่อยู่ในเช็กลิสต์ — โดยไม่ทำให้การเตือนผิดพลาดหรือเวลาเพิ่มขึ้นมาก ข้อมูลที่ขาดแบบไม่อยู่ในเช็กลิสต์ (สี) คือกลุ่มควบคุม เช็กลิสต์ไม่ควรช่วยตรงนั้น",
+  saving:"กำลังบันทึกคำตอบของคุณ…",
+  saved:"บันทึกแล้ว ขอบคุณครับ — เสร็จเรียบร้อย ปิดหน้านี้ได้เลย",
+  saveFail:"บันทึกอัตโนมัติไม่สำเร็จ กรุณากดปุ่ม “ดาวน์โหลดคำตอบของฉัน” ด้านล่าง แล้วส่งไฟล์กลับไปให้คนที่เชิญคุณ"
+ }
+};
+
+/* ---------------- items: shared key, per-language content ---------------- */
+const ITEMS = [
+ {id:1,key:{type:"clean"},
+  en:{spec:[["Year / make / model","2018 Honda Civic LX"],["Mileage","62,400 mi"],["Price","$16,900"],["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","silver"],["Features","backup camera, Bluetooth, cruise control"]],
+      summary:"This 2018 Honda Civic LX has 62,400 miles and is priced at $16,900. It has an automatic CVT transmission and two previous owners. The title is clean with no reported accidents. It comes in silver and includes a backup camera, Bluetooth, and cruise control.",
+      claims:[["Year / make / model","2018 Honda Civic LX"],["Mileage","62,400 mi"],["Price","$16,900"],["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","silver"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Honda Civic LX ปี 2018"],["เลขไมล์","95,000 กม."],["ราคา","555,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เงิน"],["อุปกรณ์","กล้องถอยหลัง, บลูทูธ, ครูซคอนโทรล"]],
+      summary:"Honda Civic LX ปี 2018 คันนี้ วิ่งมา 95,000 กม. ราคา 555,000 บาท เป็นเกียร์ออโต้ ผ่านเจ้าของมาแล้ว 2 คน เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีเงิน มาพร้อมกล้องถอยหลัง บลูทูธ และครูซคอนโทรล",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Honda Civic LX ปี 2018"],["เลขไมล์","95,000 กม."],["ราคา","555,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เงิน"]]}},
+
+ {id:2,key:{type:"commission",severity:"high",note:"Mileage stated wrong"},
+  en:{spec:[["Year / make / model","2016 Toyota Corolla LE"],["Mileage","91,200 mi"],["Price","$12,500"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","white"],["Features","lane assist, Apple CarPlay"]],
+      summary:"This 2016 Toyota Corolla LE has 71,200 miles and is listed at $12,500. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's white and features lane assist and Apple CarPlay.",
+      claims:[["Year / make / model","2016 Toyota Corolla LE"],["Mileage","71,200 mi"],["Price","$12,500"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","white"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Toyota Corolla Altis ปี 2016"],["เลขไมล์","145,000 กม."],["ราคา","445,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","ขาว"],["อุปกรณ์","เลนแอสซิสต์, Apple CarPlay"]],
+      summary:"Toyota Corolla Altis ปี 2016 คันนี้ วิ่งมา 115,000 กม. ราคา 445,000 บาท เกียร์ออโต้ เจ้าของเดิมคนเดียว เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีขาว มีระบบเลนแอสซิสต์และ Apple CarPlay",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Toyota Corolla Altis ปี 2016"],["เลขไมล์","115,000 กม."],["ราคา","445,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","ขาว"]]}},
+
+ {id:3,key:{type:"omission",severity:"high",schema:"in",note:"Accident history omitted"},
+  en:{spec:[["Year / make / model","2015 Ford Escape SE"],["Mileage","104,800 mi"],["Price","$9,800"],["Transmission","automatic"],["Previous owners","3"],["Title","clean"],["Accidents","one reported (rear-end, repaired)"],["Colour","blue"],["Features","heated seats"]],
+      summary:"This 2015 Ford Escape SE has 104,800 miles and is priced at $9,800. It has an automatic transmission and three previous owners. The title is clean. It's blue with heated seats.",
+      claims:[["Year / make / model","2015 Ford Escape SE"],["Mileage","104,800 mi"],["Price","$9,800"],["Transmission","automatic"],["Previous owners","3"],["Title","clean"],["Colour","blue"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Ford Escape SE ปี 2015"],["เลขไมล์","165,000 กม."],["ราคา","395,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","3 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","เคยชนท้าย 1 ครั้ง (ซ่อมแล้ว)"],["สี","น้ำเงิน"],["อุปกรณ์","เบาะอุ่น"]],
+      summary:"Ford Escape SE ปี 2015 คันนี้ วิ่งมา 165,000 กม. ราคา 395,000 บาท เกียร์ออโต้ ผ่านเจ้าของมา 3 คน เล่มทะเบียนปกติ สีน้ำเงิน มีเบาะอุ่น",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Ford Escape SE ปี 2015"],["เลขไมล์","165,000 กม."],["ราคา","395,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","3 คน"],["สถานะเล่มทะเบียน","ปกติ"],["สี","น้ำเงิน"]]}},
+
+ {id:4,key:{type:"commission",severity:"high",note:"Price stated wrong"},
+  en:{spec:[["Year / make / model","2019 Mazda CX-5 Touring"],["Mileage","48,300 mi"],["Price","$23,400"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","red"],["Features","sunroof, blind-spot monitoring"]],
+      summary:"This 2019 Mazda CX-5 Touring has 48,300 miles and is priced at $32,400. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's red with a sunroof and blind-spot monitoring.",
+      claims:[["Year / make / model","2019 Mazda CX-5 Touring"],["Mileage","48,300 mi"],["Price","$32,400"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","red"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Mazda CX-5 ปี 2019"],["เลขไมล์","78,000 กม."],["ราคา","735,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","แดง"],["อุปกรณ์","ซันรูฟ, เตือนจุดอับสายตา"]],
+      summary:"Mazda CX-5 ปี 2019 คันนี้ วิ่งมา 78,000 กม. ราคา 935,000 บาท เกียร์ออโต้ เจ้าของเดิมคนเดียว เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีแดง มีซันรูฟและระบบเตือนจุดอับสายตา",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Mazda CX-5 ปี 2019"],["เลขไมล์","78,000 กม."],["ราคา","935,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","แดง"]]}},
+
+ {id:5,key:{type:"clean"},
+  en:{spec:[["Year / make / model","2017 Subaru Outback 2.5i"],["Mileage","78,100 mi"],["Price","$18,200"],["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","green"],["Features","all-wheel drive, roof rails"]],
+      summary:"This 2017 Subaru Outback 2.5i has 78,100 miles and is priced at $18,200. It has a CVT automatic transmission and two previous owners. The title is clean with no reported accidents. It's green and includes all-wheel drive and roof rails.",
+      claims:[["Year / make / model","2017 Subaru Outback 2.5i"],["Mileage","78,100 mi"],["Price","$18,200"],["Transmission","automatic (CVT)"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","green"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Subaru Outback 2.5i ปี 2017"],["เลขไมล์","125,000 กม."],["ราคา","685,000 บาท"],["ระบบเกียร์","ออโต้ (CVT)"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เขียว"],["อุปกรณ์","ขับเคลื่อนสี่ล้อ, แร็คหลังคา"]],
+      summary:"Subaru Outback 2.5i ปี 2017 คันนี้ วิ่งมา 125,000 กม. ราคา 685,000 บาท เกียร์ออโต้ (CVT) ผ่านเจ้าของมา 2 คน เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีเขียว ขับเคลื่อนสี่ล้อ พร้อมแร็คหลังคา",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Subaru Outback 2.5i ปี 2017"],["เลขไมล์","125,000 กม."],["ราคา","685,000 บาท"],["ระบบเกียร์","ออโต้ (CVT)"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เขียว"]]}},
+
+ {id:6,key:{type:"omission",severity:"high",schema:"in",note:"Salvage/rebuilt title omitted"},
+  en:{spec:[["Year / make / model","2014 Chevrolet Cruze LT"],["Mileage","118,500 mi"],["Price","$6,900"],["Transmission","automatic"],["Previous owners","4"],["Title","salvage (rebuilt)"],["Accidents","none reported since rebuild"],["Colour","gray"],["Features","—"]],
+      summary:"This 2014 Chevrolet Cruze LT has 118,500 miles and is priced at $6,900. It has an automatic transmission and four previous owners. It's gray. No accidents have been reported.",
+      claims:[["Year / make / model","2014 Chevrolet Cruze LT"],["Mileage","118,500 mi"],["Price","$6,900"],["Transmission","automatic"],["Previous owners","4"],["Accidents","none reported"],["Colour","gray"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Chevrolet Cruze LT ปี 2014"],["เลขไมล์","185,000 กม."],["ราคา","235,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","4 คน"],["สถานะเล่มทะเบียน","เคยเป็นรถซาก (ซ่อมสร้างใหม่)"],["ประวัติอุบัติเหตุ","ไม่มีรายงานหลังซ่อม"],["สี","เทา"],["อุปกรณ์","—"]],
+      summary:"Chevrolet Cruze LT ปี 2014 คันนี้ วิ่งมา 185,000 กม. ราคา 235,000 บาท เกียร์ออโต้ ผ่านเจ้าของมา 4 คน สีเทา ไม่มีรายงานอุบัติเหตุ",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Chevrolet Cruze LT ปี 2014"],["เลขไมล์","185,000 กม."],["ราคา","235,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","4 คน"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เทา"]]}},
+
+ {id:7,key:{type:"commission",severity:"medium",note:"Transmission stated wrong"},
+  en:{spec:[["Year / make / model","2018 Volkswagen Golf"],["Mileage","55,700 mi"],["Price","$17,300"],["Transmission","manual"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","black"],["Features","heated seats, Android Auto"]],
+      summary:"This 2018 Volkswagen Golf has 55,700 miles and is priced at $17,300. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's black with heated seats and Android Auto.",
+      claims:[["Year / make / model","2018 Volkswagen Golf"],["Mileage","55,700 mi"],["Price","$17,300"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","black"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Volkswagen Golf ปี 2018"],["เลขไมล์","89,000 กม."],["ราคา","565,000 บาท"],["ระบบเกียร์","ธรรมดา (แมนนวล)"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","ดำ"],["อุปกรณ์","เบาะอุ่น, Android Auto"]],
+      summary:"Volkswagen Golf ปี 2018 คันนี้ วิ่งมา 89,000 กม. ราคา 565,000 บาท เกียร์ออโต้ เจ้าของเดิมคนเดียว เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีดำ มีเบาะอุ่นและ Android Auto",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Volkswagen Golf ปี 2018"],["เลขไมล์","89,000 กม."],["ราคา","565,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","ดำ"]]}},
+
+ {id:8,key:{type:"omission",severity:"low",schema:"out",note:"Colour omitted — not a required field"},
+  en:{spec:[["Year / make / model","2016 Hyundai Elantra SE"],["Mileage","83,900 mi"],["Price","$11,200"],["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","beige"],["Features","Bluetooth"]],
+      summary:"This 2016 Hyundai Elantra SE has 83,900 miles and is priced at $11,200. It has an automatic transmission and two previous owners. The title is clean with no reported accidents. It includes Bluetooth.",
+      claims:[["Year / make / model","2016 Hyundai Elantra SE"],["Mileage","83,900 mi"],["Price","$11,200"],["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Hyundai Elantra SE ปี 2016"],["เลขไมล์","133,000 กม."],["ราคา","375,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เบจ"],["อุปกรณ์","บลูทูธ"]],
+      summary:"Hyundai Elantra SE ปี 2016 คันนี้ วิ่งมา 133,000 กม. ราคา 375,000 บาท เกียร์ออโต้ ผ่านเจ้าของมา 2 คน เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ มีบลูทูธ",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Hyundai Elantra SE ปี 2016"],["เลขไมล์","133,000 กม."],["ราคา","375,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"]]}},
+
+ {id:9,key:{type:"commission",severity:"medium",note:"Owners stated wrong"},
+  en:{spec:[["Year / make / model","2017 Nissan Rogue SV"],["Mileage","69,400 mi"],["Price","$15,600"],["Transmission","automatic"],["Previous owners","3"],["Title","clean"],["Accidents","none reported"],["Colour","white"],["Features","backup camera"]],
+      summary:"This 2017 Nissan Rogue SV has 69,400 miles and is priced at $15,600. It has an automatic transmission and one previous owner. The title is clean with no reported accidents. It's white with a backup camera.",
+      claims:[["Year / make / model","2017 Nissan Rogue SV"],["Mileage","69,400 mi"],["Price","$15,600"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","none reported"],["Colour","white"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Nissan X-Trail ปี 2017"],["เลขไมล์","110,000 กม."],["ราคา","525,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","3 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","ขาว"],["อุปกรณ์","กล้องถอยหลัง"]],
+      summary:"Nissan X-Trail ปี 2017 คันนี้ วิ่งมา 110,000 กม. ราคา 525,000 บาท เกียร์ออโต้ เจ้าของเดิมคนเดียว เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีขาว มีกล้องถอยหลัง",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Nissan X-Trail ปี 2017"],["เลขไมล์","110,000 กม."],["ราคา","525,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","ขาว"]]}},
+
+ {id:10,key:{type:"omission",severity:"high",schema:"in",note:"Accident history omitted"},
+  en:{spec:[["Year / make / model","2019 Kia Sportage LX"],["Mileage","41,200 mi"],["Price","$19,900"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Accidents","two reported (one moderate, repaired)"],["Colour","silver"],["Features","Apple CarPlay, lane assist"]],
+      summary:"This 2019 Kia Sportage LX has 41,200 miles and is priced at $19,900. It has an automatic transmission and one previous owner. The title is clean. It's silver with Apple CarPlay and lane assist.",
+      claims:[["Year / make / model","2019 Kia Sportage LX"],["Mileage","41,200 mi"],["Price","$19,900"],["Transmission","automatic"],["Previous owners","1"],["Title","clean"],["Colour","silver"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Kia Sportage LX ปี 2019"],["เลขไมล์","66,000 กม."],["ราคา","645,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","เคยชน 2 ครั้ง (หนัก 1 ครั้ง ซ่อมแล้ว)"],["สี","เงิน"],["อุปกรณ์","Apple CarPlay, เลนแอสซิสต์"]],
+      summary:"Kia Sportage LX ปี 2019 คันนี้ วิ่งมา 66,000 กม. ราคา 645,000 บาท เกียร์ออโต้ เจ้าของเดิมคนเดียว เล่มทะเบียนปกติ สีเงิน มี Apple CarPlay และระบบเลนแอสซิสต์",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Kia Sportage LX ปี 2019"],["เลขไมล์","66,000 กม."],["ราคา","645,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","1 คน"],["สถานะเล่มทะเบียน","ปกติ"],["สี","เงิน"]]}},
+
+ {id:11,key:{type:"clean"},
+  en:{spec:[["Year / make / model","2015 Honda CR-V EX"],["Mileage","96,700 mi"],["Price","$13,400"],["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","gray"],["Features","sunroof, backup camera"]],
+      summary:"This 2015 Honda CR-V EX has 96,700 miles and is priced at $13,400. It has an automatic transmission and two previous owners. The title is clean with no reported accidents. It's gray with a sunroof and backup camera.",
+      claims:[["Year / make / model","2015 Honda CR-V EX"],["Mileage","96,700 mi"],["Price","$13,400"],["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","gray"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Honda CR-V EX ปี 2015"],["เลขไมล์","155,000 กม."],["ราคา","535,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เทา"],["อุปกรณ์","ซันรูฟ, กล้องถอยหลัง"]],
+      summary:"Honda CR-V EX ปี 2015 คันนี้ วิ่งมา 155,000 กม. ราคา 535,000 บาท เกียร์ออโต้ ผ่านเจ้าของมา 2 คน เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีเทา มีซันรูฟและกล้องถอยหลัง",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Honda CR-V EX ปี 2015"],["เลขไมล์","155,000 กม."],["ราคา","535,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","เทา"]]}},
+
+ {id:12,key:{type:"omission",severity:"medium",schema:"in",note:"Previous owners omitted"},
+  en:{spec:[["Year / make / model","2018 Toyota RAV4 XLE"],["Mileage","58,900 mi"],["Price","$21,700"],["Transmission","automatic"],["Previous owners","2"],["Title","clean"],["Accidents","none reported"],["Colour","blue"],["Features","sunroof, blind-spot monitoring"]],
+      summary:"This 2018 Toyota RAV4 XLE has 58,900 miles and is priced at $21,700. It has an automatic transmission and a clean title with no reported accidents. It's blue with a sunroof and blind-spot monitoring.",
+      claims:[["Year / make / model","2018 Toyota RAV4 XLE"],["Mileage","58,900 mi"],["Price","$21,700"],["Transmission","automatic"],["Title","clean"],["Accidents","none reported"],["Colour","blue"]]},
+  th:{spec:[["ปี / ยี่ห้อ / รุ่น","Toyota RAV4 ปี 2018"],["เลขไมล์","94,000 กม."],["ราคา","755,000 บาท"],["ระบบเกียร์","ออโต้"],["เจ้าของเดิม","2 คน"],["สถานะเล่มทะเบียน","ปกติ ไม่มีประวัติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","น้ำเงิน"],["อุปกรณ์","ซันรูฟ, เตือนจุดอับสายตา"]],
+      summary:"Toyota RAV4 ปี 2018 คันนี้ วิ่งมา 94,000 กม. ราคา 755,000 บาท เกียร์ออโต้ เล่มทะเบียนปกติ ไม่มีประวัติอุบัติเหตุ สีน้ำเงิน มีซันรูฟและระบบเตือนจุดอับสายตา",
+      claims:[["ปี / ยี่ห้อ / รุ่น","Toyota RAV4 ปี 2018"],["เลขไมล์","94,000 กม."],["ราคา","755,000 บาท"],["ระบบเกียร์","ออโต้"],["สถานะเล่มทะเบียน","ปกติ"],["ประวัติอุบัติเหตุ","ไม่มี"],["สี","น้ำเงิน"]]}}
+];
+
+/* ---------------- state ---------------- */
+const app=document.getElementById("app");
+let LANG="th";
+let S={pid:"",order:[],cond:{},idx:0,started:0,resp:{}};
+const tr=()=>T[LANG];
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ---------------- intro ---------------- */
+function screenIntro(){
+  const t=tr();
+  app.innerHTML=`
+    <div class="langbar">
+      <button data-lang="th" data-on="${LANG==="th"?1:0}">ไทย</button>
+      <button data-lang="en" data-on="${LANG==="en"?1:0}">English</button>
+    </div>
+    <p class="eyebrow">${t.eyebrow}</p>
+    <h1>${t.h1}</h1>
+    <p class="lede">${t.lede}</p>
+    <div class="card">
+      <label class="field" for="pid">${t.nameLabel}</label>
+      <input type="text" id="pid" placeholder="${t.namePh}" autocomplete="off">
+      <p class="foot" style="margin:10px 0 0">${t.nameFoot}</p>
+    </div>
+    <button class="btn-primary" id="go" disabled>${t.start}</button>`;
+  document.querySelectorAll('.langbar button').forEach(b=>b.addEventListener("click",()=>{
+    LANG=b.dataset.lang; document.documentElement.lang=LANG; screenIntro();}));
+  const pid=document.getElementById("pid"), go=document.getElementById("go");
+  pid.addEventListener("input",()=>{go.disabled=!pid.value.trim();});
+  pid.addEventListener("keydown",e=>{if(e.key==="Enter"&&pid.value.trim())go.click();});
+  go.addEventListener("click",()=>{
+    S.pid=pid.value.trim();
+    S.order=shuffle(ITEMS.map(i=>i.id));
+    const conds=shuffle([...Array(6).fill("structured"),...Array(6).fill("plain")]);
+    S.order.forEach((id,k)=>S.cond[id]=conds[k]);
+    S.idx=0; renderItem();
+  });
+  pid.focus();
+}
+
+/* ---------------- item ---------------- */
+function renderItem(){
+  const t=tr(), id=S.order[S.idx], item=ITEMS.find(i=>i.id===id), c=item[LANG], cond=S.cond[id];
+  const n=S.idx+1, pct=Math.round((S.idx)/12*100);
+  const specRows=c.spec.map(([k,v])=>`<div class="row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`).join("");
+
+  let structured="";
+  if(cond==="structured"){
+    const claimRows=c.claims.map(([k,v])=>`<div class="row"><span class="k">${esc(k)}</span><span>${esc(v)}</span></div>`).join("");
+    const checks=t.req.map(([key,lbl])=>`<label class="chk"><input type="checkbox" data-chk="${key}"> ${esc(lbl)}</label>`).join("");
+    structured=`
+      <p class="scaffold-note">${t.scaffold}</p>
+      <div class="card"><h2>${t.claimsHead} <span class="tag">${t.claimsTag}</span></h2><div class="claims">${claimRows}</div></div>
+      <div class="card"><h2>${t.checkHead}</h2><div class="checklist">${checks}</div></div>`;
+  }
+
+  app.innerHTML=`
+    <div class="prog"><span class="count">${t.listing} ${n} ${t.of} 12</span><div class="bar"><i style="width:${pct}%"></i></div></div>
+    <div class="card"><div class="spec"><div class="head">${t.specHead}</div>${specRows}</div></div>
+    <div class="card"><h2>${t.summary}</h2><p class="summary" style="margin:0">${esc(c.summary)}</p></div>
+    ${structured}
+    <div class="card">
+      <div class="q">
+        <p class="qlabel">${t.q1}</p>
+        <div class="opts" data-group="wrong">
+          <label class="opt" data-val="no"><input type="radio" name="wrong"><span class="dot"></span>${t.q1no}</label>
+          <label class="opt" data-val="yes"><input type="radio" name="wrong"><span class="dot"></span>${t.q1yes}</label>
+        </div>
+        <textarea class="hidden" id="wrongText" placeholder="${t.q1ph}"></textarea>
+      </div>
+      <div class="divider"></div>
+      <div class="q">
+        <p class="qlabel">${t.q2}</p>
+        <div class="opts" data-group="missing">
+          <label class="opt" data-val="no"><input type="radio" name="missing"><span class="dot"></span>${t.q2no}</label>
+          <label class="opt" data-val="yes"><input type="radio" name="missing"><span class="dot"></span>${t.q2yes}</label>
+        </div>
+        <textarea class="hidden" id="missingText" placeholder="${t.q2ph}"></textarea>
+      </div>
+    </div>
+    <button class="btn-primary" id="next" disabled>${S.idx===11?t.finish:t.next}</button>`;
+
+  let wrong=null, missing=null;
+  const wt=document.getElementById("wrongText"), mt=document.getElementById("missingText");
+  function paint(g,val){document.querySelectorAll(`.opts[data-group="${g}"] .opt`).forEach(o=>o.dataset.on=(o.dataset.val===val)?"1":"0");}
+  function refresh(){document.getElementById("next").disabled=!(wrong&&missing);}
+  document.querySelectorAll('.opts[data-group="wrong"] .opt').forEach(o=>o.addEventListener("click",()=>{
+    wrong=o.dataset.val;paint("wrong",wrong);wt.classList.toggle("hidden",wrong!=="yes");refresh();}));
+  document.querySelectorAll('.opts[data-group="missing"] .opt').forEach(o=>o.addEventListener("click",()=>{
+    missing=o.dataset.val;paint("missing",missing);mt.classList.toggle("hidden",missing!=="yes");refresh();}));
+
+  S.started=Date.now();
+  document.getElementById("next").addEventListener("click",()=>{
+    const checks={};document.querySelectorAll('input[data-chk]').forEach(x=>checks[x.dataset.chk]=x.checked);
+    S.resp[id]={condition:cond,lang:LANG,wrong,missing,wrongText:wt.value.trim(),missingText:mt.value.trim(),checks,ms:Date.now()-S.started};
+    if(S.idx===11){renderDone();}else{S.idx++;window.scrollTo(0,0);renderItem();}
+  });
+  window.scrollTo(0,0);
+}
+
+/* ---------------- done ---------------- */
+function renderDone(){
+  const t=tr();
+  app.innerHTML=`
+    <p class="eyebrow">${t.doneEye}</p>
+    <h1>${t.doneH1}</h1>
+    <p class="lede" id="saveStatus">${t.saving}</p>
+    <div class="card">
+      <h2>${t.sendHead}</h2>
+      <p class="foot" style="margin-top:0">${t.sendFoot}</p>
+      <div class="btn-row">
+        <button class="btn-primary" id="dl">${t.dl}</button>
+        <button class="btn-ghost" id="cp">${t.cp}</button>
+      </div>
+    </div>
+    <button class="btn-ghost" id="showRes" style="width:100%">${t.showRes}</button>
+    <div id="res"></div>`;
+  document.getElementById("dl").addEventListener("click",downloadData);
+  document.getElementById("cp").addEventListener("click",()=>{
+    navigator.clipboard.writeText(JSON.stringify(payload(),null,2)).then(()=>{document.getElementById("cp").textContent=t.copied;});});
+  document.getElementById("showRes").addEventListener("click",renderResults);
+  const setStatus=(msg,bad)=>{const el=document.getElementById("saveStatus");if(el){el.textContent=msg;if(bad)el.style.color="var(--rose)";}};
+  sendToSheet().then(()=>setStatus(t.saved,false)).catch(()=>setStatus(t.saveFail,true));
+}
+function payload(){return {participant:S.pid,language:LANG,completedAt:new Date().toISOString(),summary:summaryFlat(),order:S.order,responses:S.order.map(id=>({item:id,...S.resp[id]}))};}
+function downloadData(){
+  const blob=new Blob([JSON.stringify(payload(),null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=`review-test_${S.pid.replace(/\s+/g,"-")||"anon"}.json`;
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+function sendToSheet(){
+  if(!SHEET_URL||SHEET_URL.indexOf("PASTE")>-1)return Promise.reject(new Error("no-url"));
+  return fetch(SHEET_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload())});
+}
+
+/* ---------------- scoring ---------------- */
+const med=a=>{if(!a.length)return 0;const s=a.slice().sort((x,y)=>x-y),m=Math.floor(s.length/2);return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2);};
+function score(){
+  const B={plain:blank(),structured:blank()};
+  function blank(){return {commHit:0,commTot:0,omHit:0,omTot:0,omHiHit:0,omHiTot:0,inHit:0,inTot:0,outHit:0,outTot:0,cleanOk:0,cleanTot:0,falseWrong:0,falseMiss:0,times:[]};}
+  S.order.forEach(id=>{
+    const it=ITEMS.find(i=>i.id===id),r=S.resp[id],b=B[r.condition];b.times.push(r.ms);
+    const fw=r.wrong==="yes",fm=r.missing==="yes";
+    if(it.key.type==="commission"){b.commTot++;if(fw)b.commHit++;if(fm)b.falseMiss++;}
+    else if(it.key.type==="omission"){b.omTot++;if(fm)b.omHit++;
+      if(it.key.severity==="high"){b.omHiTot++;if(fm)b.omHiHit++;}
+      if(it.key.schema==="in"){b.inTot++;if(fm)b.inHit++;}
+      if(it.key.schema==="out"){b.outTot++;if(fm)b.outHit++;}
+      if(fw)b.falseWrong++;}
+    else{b.cleanTot++;if(!fw&&!fm)b.cleanOk++;if(fw)b.falseWrong++;if(fm)b.falseMiss++;}
+  });
+  return B;
+}
+function flat(b){return {commHit:b.commHit,commTot:b.commTot,omHit:b.omHit,omTot:b.omTot,omHiHit:b.omHiHit,omHiTot:b.omHiTot,inHit:b.inHit,inTot:b.inTot,outHit:b.outHit,outTot:b.outTot,cleanOk:b.cleanOk,cleanTot:b.cleanTot,falseAlarms:b.falseWrong+b.falseMiss,medMs:med(b.times),n:b.times.length};}
+function summaryFlat(){const B=score();return {structured:flat(B.structured),plain:flat(B.plain)};}
+function renderResults(){
+  const t=tr();
+  const B=score();
+  const rate=(h,tt)=>tt?Math.round(h/tt*100)+"%":"—";
+  function block(name,b){return `<div class="card"><h2>${name} <span class="pill">${b.times.length} ${t.rItems}</span></h2>
+    <div class="stat"><span>${t.rComm}</span><b>${rate(b.commHit,b.commTot)} <span class="pill">${b.commHit}/${b.commTot}</span></b></div>
+    <div class="stat"><span>${t.rOm}</span><b>${rate(b.omHit,b.omTot)} <span class="pill">${b.omHit}/${b.omTot}</span></b></div>
+    <div class="stat"><span>${t.rHi}</span><b>${rate(b.omHiHit,b.omHiTot)} <span class="pill">${b.omHiHit}/${b.omHiTot}</span></b></div>
+    <div class="stat"><span>${t.rIn}</span><b>${rate(b.inHit,b.inTot)} <span class="pill">${b.inHit}/${b.inTot}</span></b></div>
+    <div class="stat"><span>${t.rOut}</span><b>${rate(b.outHit,b.outTot)} <span class="pill">${b.outHit}/${b.outTot}</span></b></div>
+    <div class="stat"><span>${t.rClean}</span><b>${rate(b.cleanOk,b.cleanTot)} <span class="pill">${b.cleanOk}/${b.cleanTot}</span></b></div>
+    <div class="stat"><span>${t.rFalse}</span><b>${b.falseWrong+b.falseMiss}</b></div>
+    <div class="stat"><span>${t.rTime}</span><b>${(med(b.times)/1000).toFixed(1)}s</b></div></div>`;}
+  document.getElementById("res").innerHTML=`
+    <div class="divider"></div>
+    <p class="eyebrow">${t.resTitle} · ${esc(S.pid)}</p>
+    <p class="foot">${t.resNote}</p>
+    ${block(t.cStructured,B.structured)}
+    ${block(t.cPlain,B.plain)}
+    <p class="foot">${t.resFoot}</p>`;
+  document.getElementById("res").scrollIntoView({behavior:"smooth"});
+}
+
+screenIntro();
+</script>
+</body>
+</html>
